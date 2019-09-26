@@ -16,7 +16,6 @@ class Trainee extends Component {
     };
   }
   handleDataParent = (name, email, password) => event => {
-    debugger;
     console.log("State", this.state);
     const { user, open } = this.state;
     user["name"] = name;
