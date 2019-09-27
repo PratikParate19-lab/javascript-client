@@ -40,7 +40,7 @@ class Trainee extends Component {
   render() {
     const { open } = this.state;
     return (
-      <div>
+      <div style={{ marginTop: "15vh" }}>
         <Button color="primary" variant="outlined" onClick={this.handleClick}>
           Add Traineer
         </Button>

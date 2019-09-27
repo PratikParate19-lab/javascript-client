@@ -1,7 +1,6 @@
 import React, { Component } from "react";
 import { Grid, TextField, Avatar } from "@material-ui/core";
 // import { Container, CssBaseline } from "@material-ui/core";
-
 import LockOutlinedIcon from "@material-ui/icons/LockOutlined";
 import Typography from "@material-ui/core/Typography";
 import validationLoginSchema from "./validationLoginSchema";
@@ -55,7 +54,7 @@ class Login extends Component {
       button: true,
       showPassword: false
     };
-    this.handleFieldChange=this.handleFieldChange.bind(this);
+    this.handleFieldChange = this.handleFieldChange.bind(this);
   }
 
   handleFieldChange = event => {

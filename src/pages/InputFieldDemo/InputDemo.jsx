@@ -32,7 +32,6 @@ class InputDemo extends Component {
     this.handleValidator();
   };
   handleSportsChange = e => {
-    debugger;
     if (e.target.value === "Select") {
       this.handleValidator();
       this.setState({ sports: "", Cricket: "", Football: "" });
