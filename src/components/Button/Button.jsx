@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import React, { Component } from "react";
 import ButtonStyle from "./style";
 class Button extends Component {

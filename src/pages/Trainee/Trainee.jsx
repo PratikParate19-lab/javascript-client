@@ -1,60 +1,23 @@
+/* eslint-disable no-unused-vars */
 import React, { Component } from "react";
-import Button from "@material-ui/core/Button";
-import AddDailog from "./component/AddDailog/AddDailog";
-import Form from "./Form";
+
+import { Switch, Route } from 'react-router-dom';
+import TraineeList from "./TraineeList";
+import TraineeDetails  from "./TraineeDetails";
 
 class Trainee extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      open: false,
-      user: {
-        name: "",
-        email: "",
-        password: ""
-      }
-    };
-  }
-  handleDataParent = (name, email, password) => event => {
-    console.log("State", this.state);
-    const { user, open } = this.state;
-    user["name"] = name;
-    user["email"] = email;
-    user["password"] = password;
-    this.setState({
-      open: open ? false : true,
-      user: {
-        name: name,
-        email: email,
-        password: password
-      }
-    });
-
-    console.log("State", this.state.user);
-  };
-  handleClick = () => {
-    const { open } = this.state;
-    // console.log("open",open);
-    this.setState({ open: open ? false : true });
-  };
   render() {
-    const { open } = this.state;
+console.log("props",this.props);
+    const { match } = this.props;
+    console.log("match trainee", match);
     return (
-      <div style={{ marginTop: "15vh" }}>
-        <Button color="primary" variant="outlined" onClick={this.handleClick}>
-          Add Traineer
-        </Button>
-        <AddDailog open={open} onClick={this.handleClick}>
-          {/* <Dailog>
-    
-</Dailog> */}
-          <Form
-            handlerFromParent={this.handleDataParent}
-            clickHandler={this.handleClick}
-          ></Form>
-        </AddDailog>
-      </div>
+      <Switch>
+        <Route exact path={match.path} component={TraineeList} />
+        <Route exact path={`${match.path}/:id`} component={TraineeDetails} />
+      </Switch>
+
     );
   }
 }
+
 export default Trainee;

@@ -1,0 +1,88 @@
+/* eslint-disable no-unused-vars */
+import React, { Component } from "react";
+import AddDialog from "../Trainee/component/AddDailog/AddDailog";
+import Button from "@material-ui/core/Button";
+import Form from "../Trainee/Form";
+import trainees from "./data/trainees";
+import { Link } from "react-router-dom";
+import Table from "../Table/Table";
+class TraineeList extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      open: false,
+      user: {
+        name: "",
+        email: "",
+        password: ""
+      },
+orderBy:"",order:"asc"
+      
+    };
+  }
+
+  handleClick = () => {
+    const { open } = this.state;
+    this.setState({
+      open: open ? false : true
+    });
+    console.log(this.state);
+  };
+
+  handleDataParent = (name, email, password) => event => {
+    const { user, open } = this.state;
+    user["name"] = name;
+    user["email"] = email;
+    user["password"] = password;
+    this.setState({
+      open: open ? false : true,
+      user
+    });
+
+    console.log(this.state.user);
+  };
+
+  render() {
+    const { open } = this.state;
+    const { match } = this.props;
+    // console.log(match);
+
+    return (
+      <>
+        <Button variant="outlined" color="primary" onClick={this.handleClick}>
+          Add Trainee List
+        </Button>
+        <AddDialog open={open} clickHandler={this.handleClick}>
+          <Form
+            handlerFromParent={this.handleDataParent}
+            clickHandler={this.handleClick}
+          />
+        </AddDialog>
+        <Table
+          id="id"
+          data={trainees}
+          columns={[
+            {
+              field: "name",
+              label: "Name",
+              align: "center"
+            },
+            {
+              field: "email",
+              label: "Email"
+            }
+          ]}
+        />
+        <ul>
+          {trainees.map(({ id, name }) => (
+            <li key={id}>
+              <Link to={`${match.url}/${id}`}> {name} </Link>
+            </li>
+          ))}
+        </ul>
+      </>
+    );
+  }
+}
+
+export default TraineeList;

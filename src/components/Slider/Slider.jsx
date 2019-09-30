@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import React, { Component } from "react";
 import { getRandomNumber,getNextRoundRobin } from "../../lib/utils/math";
 import { align }from "./style";

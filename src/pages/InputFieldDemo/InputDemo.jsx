@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import React, { Component } from "react";
 import { InputBox } from "../../components/TextField/TextField";
 import SelectBox from "../../components/SelectField/SelectField";
@@ -24,9 +25,7 @@ class InputDemo extends Component {
       role: ""
     };
   }
-  componentDidUpdate() {
-    // console.log("state", this.state);
-  }
+ 
   handleChange = e => {
     this.setState({ name: e.target.value });
     this.handleValidator();
@@ -168,6 +167,7 @@ class InputDemo extends Component {
   };
 
   render() {
+    console.log(this.props);
     const { button, errors } = this.state;
     console.log(this.state);
 

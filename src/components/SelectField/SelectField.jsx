@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import React, { Component } from "react";
 import { input } from "./style";
 import PropTypes from "prop-types";

@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import React, { Component } from "react";
 import Dialog from "@material-ui/core/Dialog";
 import DialogContent from "@material-ui/core/DialogContent";
@@ -6,10 +7,11 @@ import DialogTitle from "@material-ui/core/DialogTitle";
 export class AddDailog extends Component {
   render() {
     const { open, handleClose, children } = this.props;
+    console.log("this.props",this.props); 
     return (
       <div>
         <Dialog
-          open={open}
+          open={this.props.open}
           onClose={handleClose}
           aria-labelledby="form-dialog-title"
           aria-describedby="form-dialog-description"
