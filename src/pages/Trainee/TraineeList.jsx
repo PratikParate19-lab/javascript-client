@@ -42,19 +42,19 @@ class TraineeList extends Component {
 
     console.log(this.state.user);
   };
-  // getFormattedDate = date => {
-  //   return moment(date).format("dddd, MMMM Do YYYY, h:mm:ss a");
-  // };
-  // handleSort = sort => {
-  //   const { orderBy, order } = this.state;
-  //   console.log("sortBy",sort);
-  //   const sortBy = orderBy === sort && order === "desc";
-  //   this.setState({
-  //     order: sortBy ? 'asc':'desc',
-  //     orderBy: sort
-  //   });
-  //   // console.log("this sort", this.state);
-  // };
+  getFormattedDate = date => {
+    return moment(date).format("dddd, MMMM Do YYYY, h:mm:ss a");
+  };
+  handleSort = sort => {
+    const { orderBy, order } = this.state;
+    console.log("sortBy",sort);
+    const sortBy = orderBy === sort && order === "desc";
+    this.setState({
+      order: sortBy ? 'asc':'desc',
+      orderBy: sort
+    });
+    // console.log("this sort", this.state);
+  };
   render() {
     const { open, order, orderBy } = this.state;
     const { match } = this.props;
@@ -88,19 +88,19 @@ class TraineeList extends Component {
             {
               field: "email",
               label: "Email",
-              // format: value => value && value.toUpperCase()
+              format: value => value && value.toUpperCase()
             },
-            // {
-            //   field: "createdAt",
-            //   label: "Date",
-            //   algin: "right",
-            //   // format: this.getFormattedDate
-            // }
+            {
+              field: "createdAt",
+              label: "Date",
+              algin: "right",
+              format: this.getFormattedDate
+            }
           ]}
-          // orderBy={orderBy}
-          // order={order}
-          // onSort={this.handleSort}
-          // onSelect={this.handleSelect}
+          orderBy={orderBy}
+          order={order}
+          onSort={this.handleSort}
+          onSelect={this.handleSelect}
         />
         <ul>
           {trainees.map(({ id, name }) => (

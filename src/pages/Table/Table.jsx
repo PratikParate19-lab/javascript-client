@@ -49,8 +49,8 @@ class TablePage extends Component {
           <TableBody>
             {data.map((row, index) => (
               <TableRow
-                hover
-                key={row.name}
+              key={row.name}
+              hover
                 style={{
                   padding: "5px 20px",
                   height: 25,
@@ -59,10 +59,9 @@ class TablePage extends Component {
               >
                 {columns.map(column => (
                   <TableCell component="th" scope="row" align={column.align}>
-                   {/* {column.format
+                   {column.format
                       ? column.format(row[column.field])
-                      : row[column.field]} */}
-                      {row[column.field]}
+                      : row[column.field]}
                   </TableCell>
                 ))}
               </TableRow>
