@@ -7,18 +7,26 @@ import trainees from "./data/trainees";
 import { Link } from "react-router-dom";
 import Table from "../Table/Table";
 import moment from "moment";
+import DeleteIcon from "@material-ui/icons/Delete";
+import RemoveDialog from "./component/RemoveDailog/RemoveDailog";
+import EditDialog from './component/EditDailog/EditDailog'
+import EditIcon from "@material-ui/icons/Edit";
 class TraineeList extends Component {
   constructor(props) {
     super(props);
     this.state = {
       open: false,
+      orderBy: "",
+      order: "asc",
+      page: 0,
       user: {
         name: "",
         email: "",
         password: ""
       },
-      orderBy: "",
-      order: "asc"
+      openEditDialog: false,
+      openDeleteDialog: false,
+      currentUser: {}
     };
   }
 
@@ -47,16 +55,50 @@ class TraineeList extends Component {
   };
   handleSort = sort => {
     const { orderBy, order } = this.state;
-    console.log("sortBy",sort);
+    console.log("sortBy", sort);
     const sortBy = orderBy === sort && order === "desc";
     this.setState({
-      order: sortBy ? 'asc':'desc',
+      order: sortBy ? "asc" : "desc",
       orderBy: sort
     });
     // console.log("this sort", this.state);
   };
+  handleClose = () => {
+    this.setState({
+      open: false,
+      openEditDialog: false,
+      openDeleteDialog: false
+    });
+  };
+
+  handleEditDialogueOpen = obj => {
+    this.setState({
+      openEditDialog: true,
+      currentUser: obj
+    });
+  };
+
+  handleRemoveDialogueOpen = obj => {
+    this.setState({
+      openDeleteDialog: true,
+      currentUser: obj
+    });
+  };
+  handleChangePage = (event, newPage) => {
+    this.setState({
+      page: newPage
+    });
+  };
   render() {
-    const { open, order, orderBy } = this.state;
+    const {
+      open,
+      order,
+      orderBy,
+      page,
+      openEditDialog,
+      currentUser,
+      openDeleteDialog
+    } = this.state;
     const { match } = this.props;
     // console.log(match);
 
@@ -76,6 +118,19 @@ class TraineeList extends Component {
             clickHandler={this.handleClick}
           />
         </AddDialog>
+        {openEditDialog && (
+          <EditDialog
+            open={openEditDialog}
+            onClose={this.handleClose}
+            data={currentUser}
+          />
+        )}
+        <RemoveDialog
+          open={openDeleteDialog}
+          onClose={this.handleClose}
+          data={currentUser}
+          onSubmit={this.onDeleteSubmit}
+        />
         <Table
           id="id"
           data={trainees}
@@ -97,10 +152,23 @@ class TraineeList extends Component {
               format: this.getFormattedDate
             }
           ]}
+          actions={[
+            {
+              icon: <EditIcon />,
+              handler: this.handleEditDialogueOpen
+            },
+            {
+              icon: <DeleteIcon />,
+              handler: this.handleRemoveDialogueOpen
+            }
+          ]}
           orderBy={orderBy}
           order={order}
           onSort={this.handleSort}
           onSelect={this.handleSelect}
+          count={100}
+          page={page}
+          onChangePage={this.handleChangePage}
         />
         <ul>
           {trainees.map(({ id, name }) => (

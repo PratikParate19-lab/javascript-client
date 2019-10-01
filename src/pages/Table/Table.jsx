@@ -8,6 +8,8 @@ import TableHead from "@material-ui/core/TableHead";
 import TableRow from "@material-ui/core/TableRow";
 import Paper from "@material-ui/core/Paper";
 import TableSortLabel from "@material-ui/core/TableSortLabel";
+import IconButton from "@material-ui/core/IconButton";
+import TablePagination from '@material-ui/core/TablePagination';
 const style = theme => ({
   root: {
     marginTop: theme.spacing(3),
@@ -22,9 +24,21 @@ class TablePage extends Component {
   getStripedStyle(index) {
     return { background: index % 2 ? "#fafafa" : "white" };
   }
+  
   render() {
     console.log("this", this.props);
-    const { classes, data, columns, onSort, order, orderBy } = this.props;
+    const {
+      classes,
+      data,
+      columns,
+      onSort,
+      order,
+      orderBy,
+      actions,
+      count,
+      onChangePage,
+      page
+    } = this.props;
 
     return (
       <Paper className={classes.root}>
@@ -33,7 +47,6 @@ class TablePage extends Component {
             <TableRow>
               {columns.map(column => (
                 <TableCell key={column.field} align={column.align}>
-                  
                   <TableSortLabel
                     active={orderBy === column.field}
                     direction={order}
@@ -48,25 +61,32 @@ class TablePage extends Component {
 
           <TableBody>
             {data.map((row, index) => (
-              <TableRow
-              key={row.name}
-              hover
-                style={{
-                  padding: "5px 20px",
-                  height: 25,
-                  ...this.getStripedStyle(index)
-                }}
-              >
+              <TableRow key={row.name} hover selected={index % 2 === 0}>
                 {columns.map(column => (
                   <TableCell component="th" scope="row" align={column.align}>
-                   {column.format
+                    {column.format
                       ? column.format(row[column.field])
                       : row[column.field]}
                   </TableCell>
                 ))}
+                {actions.map(({ icon, handler }) => (
+                  <IconButton
+                    className={classes.button}
+                    onClick={() => handler(row)}
+                  >
+                    {icon}
+                  </IconButton>
+                ))}
               </TableRow>
             ))}
           </TableBody>
+          <TablePagination
+            rowsPerPageOptions={[]}
+            count={count}
+            page={page}
+            rowsPerPage={10}
+            onChangePage={onChangePage}
+          />
         </Table>
       </Paper>
     );
