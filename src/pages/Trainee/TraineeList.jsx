@@ -6,6 +6,7 @@ import Form from "../Trainee/Form";
 import trainees from "./data/trainees";
 import { Link } from "react-router-dom";
 import Table from "../Table/Table";
+import moment from "moment";
 class TraineeList extends Component {
   constructor(props) {
     super(props);
@@ -16,8 +17,8 @@ class TraineeList extends Component {
         email: "",
         password: ""
       },
-orderBy:"",order:"asc"
-      
+      orderBy: "",
+      order: "asc"
     };
   }
 
@@ -41,15 +42,32 @@ orderBy:"",order:"asc"
 
     console.log(this.state.user);
   };
-
+  // getFormattedDate = date => {
+  //   return moment(date).format("dddd, MMMM Do YYYY, h:mm:ss a");
+  // };
+  // handleSort = sort => {
+  //   const { orderBy, order } = this.state;
+  //   console.log("sortBy",sort);
+  //   const sortBy = orderBy === sort && order === "desc";
+  //   this.setState({
+  //     order: sortBy ? 'asc':'desc',
+  //     orderBy: sort
+  //   });
+  //   // console.log("this sort", this.state);
+  // };
   render() {
-    const { open } = this.state;
+    const { open, order, orderBy } = this.state;
     const { match } = this.props;
     // console.log(match);
 
     return (
       <>
-        <Button variant="outlined" color="primary" onClick={this.handleClick}>
+        <Button
+          variant="outlined"
+          color="primary"
+          onClick={this.handleClick}
+          style={{ textAlign: "right" }}
+        >
           Add Trainee List
         </Button>
         <AddDialog open={open} clickHandler={this.handleClick}>
@@ -69,9 +87,20 @@ orderBy:"",order:"asc"
             },
             {
               field: "email",
-              label: "Email"
-            }
+              label: "Email",
+              // format: value => value && value.toUpperCase()
+            },
+            // {
+            //   field: "createdAt",
+            //   label: "Date",
+            //   algin: "right",
+            //   // format: this.getFormattedDate
+            // }
           ]}
+          // orderBy={orderBy}
+          // order={order}
+          // onSort={this.handleSort}
+          // onSelect={this.handleSelect}
         />
         <ul>
           {trainees.map(({ id, name }) => (

@@ -7,7 +7,7 @@ import TableCell from "@material-ui/core/TableCell";
 import TableHead from "@material-ui/core/TableHead";
 import TableRow from "@material-ui/core/TableRow";
 import Paper from "@material-ui/core/Paper";
-
+import TableSortLabel from "@material-ui/core/TableSortLabel";
 const style = theme => ({
   root: {
     marginTop: theme.spacing(3),
@@ -19,9 +19,12 @@ const style = theme => ({
 });
 
 class TablePage extends Component {
+  getStripedStyle(index) {
+    return { background: index % 2 ? "#fafafa" : "white" };
+  }
   render() {
     console.log("this", this.props);
-    const { classes, data, columns } = this.props;
+    const { classes, data, columns, onSort, order, orderBy } = this.props;
 
     return (
       <Paper className={classes.root}>
@@ -30,18 +33,36 @@ class TablePage extends Component {
             <TableRow>
               {columns.map(column => (
                 <TableCell key={column.field} align={column.align}>
-                  {column.label}
+                  
+                  <TableSortLabel
+                    active={orderBy === column.field}
+                    direction={order}
+                    onClick={() => onSort(column.field)}
+                  >
+                    {column.label}
+                  </TableSortLabel>
                 </TableCell>
               ))}
             </TableRow>
           </TableHead>
 
           <TableBody>
-            {data.map(row => (
-              <TableRow key={row.name}>
+            {data.map((row, index) => (
+              <TableRow
+                hover
+                key={row.name}
+                style={{
+                  padding: "5px 20px",
+                  height: 25,
+                  ...this.getStripedStyle(index)
+                }}
+              >
                 {columns.map(column => (
                   <TableCell component="th" scope="row" align={column.align}>
-                    {row[column.field]}
+                   {/* {column.format
+                      ? column.format(row[column.field])
+                      : row[column.field]} */}
+                      {row[column.field]}
                   </TableCell>
                 ))}
               </TableRow>
