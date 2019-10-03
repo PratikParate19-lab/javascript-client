@@ -1,5 +1,5 @@
 /* eslint-disable no-unused-vars */
-import React, { Component } from "react";
+import React from "react";
 import Dialog from "@material-ui/core/Dialog";
 import DialogActions from "@material-ui/core/DialogActions";
 import DialogContent from "@material-ui/core/DialogContent";
@@ -10,6 +10,7 @@ import AccountCircle from "@material-ui/icons/AccountCircle";
 import Button from "@material-ui/core/Button";
 import { Grid, TextField } from "@material-ui/core";
 import { withStyles } from "@material-ui/core/styles";
+import { withSnackBarConsumer } from "../../../../contexts/SnackBarProvider/withSnackBarConsume";
 
 const styles = theme => ({
   root: {
@@ -21,7 +22,8 @@ const styles = theme => ({
     color: theme.palette.text.secondary
   }
 });
-class EditDailog extends Component {
+
+class EditDialog extends React.PureComponent {
   constructor(props) {
     super(props);
     const { data } = props;
@@ -36,16 +38,20 @@ class EditDailog extends Component {
   };
 
   handleSubmit = () => {
+    const { onClose } = this.state;
+    const { snackBarOpen } = this.props;
     console.log(this.state);
+    snackBarOpen("This is a success message !", "success");
   };
+
   render() {
     const { open, onClose, classes } = this.props;
-    console.log("this props", this.props);
+    console.log("this",this.props);
     console.log(this.props.data.name);
     const { name, email } = this.state;
     return (
       <Dialog open={open} aria-labelledby="form-dialog-title">
-        <DialogTitle id="form-dialog-title">Edit</DialogTitle>
+        <DialogTitle id="form-dialog-title">Edit Trainee Details</DialogTitle>
         <DialogContent>
           <Grid container spacing={3}>
             <Grid item xs={12}>
@@ -98,7 +104,14 @@ class EditDailog extends Component {
           <Button color="primary" onClick={onClose}>
             Cancel
           </Button>
-          <Button color="primary" onClick={this.handleSubmit}>
+
+          <Button
+            color="primary"
+            onClick={() => {
+              this.handleSubmit();
+              onClose();
+            }}
+          >
             Submit
           </Button>
         </DialogActions>
@@ -106,4 +119,4 @@ class EditDailog extends Component {
     );
   }
 }
-export default withStyles()(EditDailog);
+export default withSnackBarConsumer(withStyles(styles)(EditDialog));

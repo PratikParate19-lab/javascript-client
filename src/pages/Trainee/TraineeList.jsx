@@ -1,16 +1,18 @@
 /* eslint-disable no-unused-vars */
-import React, { Component } from "react";
-import AddDialog from "../Trainee/component/AddDailog/AddDailog";
+import AddDialog from "./component/AddDailog/AddDailog";
 import Button from "@material-ui/core/Button";
-import Form from "../Trainee/Form";
-import trainees from "./data/trainees";
-import { Link } from "react-router-dom";
-import Table from "../Table/Table";
-import moment from "moment";
 import DeleteIcon from "@material-ui/icons/Delete";
 import RemoveDialog from "./component/RemoveDailog/RemoveDailog";
-import EditDialog from './component/EditDailog/EditDailog'
 import EditIcon from "@material-ui/icons/Edit";
+import EditDialog from "./component/EditDailog/EditDailog";
+import Form from "../Trainee/Form";
+import moment from "moment";
+import trainees from "./data/trainees";
+import Table from "../Table/Table";
+import React, { Component } from "react";
+import { Link } from "react-router-dom";
+import { withSnackBarConsumer } from "../../contexts/SnackBarProvider/withSnackBarConsume";
+
 class TraineeList extends Component {
   constructor(props) {
     super(props);
@@ -35,34 +37,8 @@ class TraineeList extends Component {
     this.setState({
       open: open ? false : true
     });
-    console.log(this.state);
   };
 
-  handleDataParent = (name, email, password) => event => {
-    const { user, open } = this.state;
-    user["name"] = name;
-    user["email"] = email;
-    user["password"] = password;
-    this.setState({
-      open: open ? false : true,
-      user
-    });
-
-    console.log(this.state.user);
-  };
-  getFormattedDate = date => {
-    return moment(date).format("dddd, MMMM Do YYYY, h:mm:ss a");
-  };
-  handleSort = sort => {
-    const { orderBy, order } = this.state;
-    console.log("sortBy", sort);
-    const sortBy = orderBy === sort && order === "desc";
-    this.setState({
-      order: sortBy ? "asc" : "desc",
-      orderBy: sort
-    });
-    // console.log("this sort", this.state);
-  };
   handleClose = () => {
     this.setState({
       open: false,
@@ -84,11 +60,57 @@ class TraineeList extends Component {
       currentUser: obj
     });
   };
+
+  onDeleteSubmit = obj => {
+    console.log("Delete Operation-->", obj);
+    const { snackBarOpen } = this.props;
+    const check = moment(obj.createdAt).isAfter("2019-02-14");
+
+    check
+      ? snackBarOpen("This is a success message !", "success")
+      : snackBarOpen("This is an error message !", "error");
+  };
+
+  handleDataParent = (name, email, password) => event => {
+    const { user, open } = this.state;
+    const { snackBarOpen } = this.props;
+
+    user["name"] = name;
+    user["email"] = email;
+    user["password"] = password;
+    this.setState({
+      open: open ? false : true
+    });
+    snackBarOpen("This is a success message !", "success");
+    console.log(this.state.user);
+  };
+
+  getDateFormatted = date => {
+    return moment(date).format("dddd, MMMM Do YYYY, h:mm:ss a");
+  };
+
+  handleSort = (event, property) => {
+    const { order, orderBy } = this.state;
+    const isDesc = orderBy === property && order === "desc";
+    console.log(this.state);
+    this.setState({
+      order: isDesc ? "asc" : "desc",
+      orderBy: property
+    });
+  };
   handleChangePage = (event, newPage) => {
     this.setState({
       page: newPage
     });
   };
+
+  clickHandler = () => {
+    const { edit } = this.state;
+    this.setState({
+      edit: edit ? false : true
+    });
+  };
+
   render() {
     const {
       open,
@@ -96,28 +118,23 @@ class TraineeList extends Component {
       orderBy,
       page,
       openEditDialog,
-      currentUser,
-      openDeleteDialog
+      openDeleteDialog,
+      currentUser
     } = this.state;
     const { match } = this.props;
-    // console.log(match);
 
     return (
       <>
-        <Button
-          variant="outlined"
-          color="primary"
-          onClick={this.handleClick}
-          style={{ textAlign: "right" }}
-        >
-          Add Trainee List
+        <Button variant="outlined" color="primary" onClick={this.handleClick}>
+          Add TRAINEE LIST
         </Button>
-        <AddDialog open={open} clickHandler={this.handleClick}>
+        <AddDialog openProp={open} clickHandler={this.handleClick}>
           <Form
             handlerFromParent={this.handleDataParent}
             clickHandler={this.handleClick}
           />
         </AddDialog>
+
         {openEditDialog && (
           <EditDialog
             open={openEditDialog}
@@ -134,22 +151,18 @@ class TraineeList extends Component {
         <Table
           id="id"
           data={trainees}
-          columns={[
-            {
-              field: "name",
-              label: "Name",
-              align: "center"
-            },
+          column={[
+            { field: "name", label: "Name", align: "center" },
             {
               field: "email",
-              label: "Email",
+              label: "Email Address",
               format: value => value && value.toUpperCase()
             },
             {
               field: "createdAt",
               label: "Date",
-              algin: "right",
-              format: this.getFormattedDate
+              align: "right",
+              format: this.getDateFormatted
             }
           ]}
           actions={[
@@ -170,6 +183,7 @@ class TraineeList extends Component {
           page={page}
           onChangePage={this.handleChangePage}
         />
+
         <ul>
           {trainees.map(({ id, name }) => (
             <li key={id}>
@@ -182,4 +196,4 @@ class TraineeList extends Component {
   }
 }
 
-export default TraineeList;
+export default withSnackBarConsumer(TraineeList);

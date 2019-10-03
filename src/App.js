@@ -13,20 +13,23 @@ import InputDemo from "./pages/InputFieldDemo/InputDemo";
 import TextFieldDemo from "./pages/TextFieldDemo/TextFieldDemo";
 import PrivateRoute from "./routes/PrivateRoute";
 import AuthRoute from "./routes/AuthRoute";
+import SimpleSnackbar from "./contexts/SnackBarProvider/SnackBarProvider"
 
 const App = () => (
-  <MuiThemeProvider theme={theme}>
-    <Router>
-      <Switch>
-        <PrivateRoute path="/trainee" component={Trainee} />
-        <PrivateRoute path="/textFieldDemo" component={TextFieldDemo} />
-        <PrivateRoute path="/inputDemo" component={InputDemo} />
-        <PrivateRoute path="/childrenDemo" component={ChildrenDemo} />
-        <AuthRoute path="/login" component={Login} />
-        <PrivateRoute path="/" component={Trainee} />
-        <Route component={NoMatch} />
-      </Switch>
-    </Router>
-  </MuiThemeProvider>
+  <SimpleSnackbar>
+    <MuiThemeProvider theme={theme}>
+      <Router>
+        <Switch>
+          <PrivateRoute path="/trainee" component={Trainee} />
+          <PrivateRoute path="/textFieldDemo" component={TextFieldDemo} />
+          <PrivateRoute path="/inputDemo" component={InputDemo} />
+          <PrivateRoute path="/childrenDemo" component={ChildrenDemo} />
+          <AuthRoute path="/login" component={Login} />
+          <PrivateRoute path="/" component={Trainee} />
+          <Route component={NoMatch} />
+        </Switch>
+      </Router>
+    </MuiThemeProvider>
+  </SimpleSnackbar>
 );
 export default App;

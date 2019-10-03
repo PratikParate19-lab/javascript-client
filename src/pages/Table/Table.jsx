@@ -6,12 +6,14 @@ import TableBody from "@material-ui/core/TableBody";
 import TableCell from "@material-ui/core/TableCell";
 import TableHead from "@material-ui/core/TableHead";
 import TableRow from "@material-ui/core/TableRow";
-import Paper from "@material-ui/core/Paper";
 import TableSortLabel from "@material-ui/core/TableSortLabel";
+import TablePagination from "@material-ui/core/TablePagination";
+import Paper from "@material-ui/core/Paper";
 import IconButton from "@material-ui/core/IconButton";
-import TablePagination from '@material-ui/core/TablePagination';
+
 const style = theme => ({
   root: {
+    width: "100%",
     marginTop: theme.spacing(3),
     overflowX: "auto"
   },
@@ -21,23 +23,19 @@ const style = theme => ({
 });
 
 class TablePage extends Component {
-  getStripedStyle(index) {
-    return { background: index % 2 ? "#fafafa" : "white" };
-  }
-  
   render() {
-    console.log("this", this.props);
     const {
       classes,
       data,
-      columns,
-      onSort,
-      order,
+      column,
       orderBy,
-      actions,
+      order,
+      onSort,
+      onSelect,
       count,
+      page,
       onChangePage,
-      page
+      actions
     } = this.props;
 
     return (
@@ -45,8 +43,13 @@ class TablePage extends Component {
         <Table className={classes.table}>
           <TableHead>
             <TableRow>
-              {columns.map(column => (
-                <TableCell key={column.field} align={column.align}>
+              {column.map(column => (
+                <TableCell
+                  component="th"
+                  scope="row"
+                  align={column.align}
+                  sortDirection={orderBy === column.id ? order : false}
+                >
                   <TableSortLabel
                     active={orderBy === column.field}
                     direction={order}
@@ -58,15 +61,12 @@ class TablePage extends Component {
               ))}
             </TableRow>
           </TableHead>
-
           <TableBody>
             {data.map((row, index) => (
               <TableRow key={row.name} hover selected={index % 2 === 0}>
-                {columns.map(column => (
+                {column.map(column => (
                   <TableCell component="th" scope="row" align={column.align}>
-                    {column.format
-                      ? column.format(row[column.field])
-                      : row[column.field]}
+                    {column.format ? column.format(row[column.field]) : row[column.field]}
                   </TableCell>
                 ))}
                 {actions.map(({ icon, handler }) => (
@@ -82,13 +82,20 @@ class TablePage extends Component {
           </TableBody>
           <TablePagination
             rowsPerPageOptions={[]}
+            colSpan={3}
             count={count}
             page={page}
             rowsPerPage={10}
+            SelectProps={{
+              inputProps: { "aria-label": "Rows per page" },
+              native: true
+            }}
             onChangePage={onChangePage}
           />
         </Table>
       </Paper>
+
+
     );
   }
 }
