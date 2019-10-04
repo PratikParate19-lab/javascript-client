@@ -9,6 +9,7 @@ import React, { Component } from "react";
 import trainees from "./data/trainees";
 import Typography from "@material-ui/core/Typography";
 import { withStyles } from "@material-ui/core/styles";
+import NoMatch from "../NoMatch/NoMatch";
 
 const style = theme => ({
   card: {
@@ -27,7 +28,7 @@ const style = theme => ({
     justifyContent: "flex-start",
     margin: 10,
     width: 100,
-    height: 100,
+    height: 100
   },
   controls: {
     display: "flex",
@@ -54,45 +55,53 @@ class TraineeDetails extends Component {
 
   render() {
     const { classes } = this.props;
+    console.log("details", this.props);
     const { id } = this.props.match.params;
     const details = this.validateUser(id);
     console.log("details", details);
     return (
-      <div>
-        <Card className={classes.card}>
-          <CardMedia
-            className={classes.cover}
-            image="/images/thumb.png"
-            title="Live from space album cover"
-          />
-          <div className={classes.details}>
-            <CardContent className={classes.content}>
-              <Typography component="h5" variant="h5">
-                {details[0].name}
-              </Typography>
-              <Typography variant="subtitle1" color="textSecondary">
-                {this.printDateFormat(details[0].createdAt)}
-              </Typography>
-              <Typography component="h6" variant="subtitle1">
-                {details[0].email}
-              </Typography>
-            </CardContent>
-          </div>
-        </Card>
+      <>
+        
+        {details.length === 1 ? (
+          <div>
+            <Card className={classes.card}>
+              <CardMedia
+                className={classes.cover}
+                image="/images/thumb.png"
+                title="Live from space album cover"
+              />
+              <div className={classes.details}>
+                <CardContent className={classes.content}>
+                  <Typography component="h5" variant="h5">
+                    {details[0].name}
+                  </Typography>
+                  <Typography variant="subtitle1" color="textSecondary">
+                    {this.printDateFormat(details[0].createdAt)}
+                  </Typography>
+                  <Typography component="h6" variant="subtitle1">
+                    {details[0].email}
+                  </Typography>
+                </CardContent>
+              </div>
+            </Card>
 
-        <div className={classes.wrapper}>
-          <br />
-          <Link to="/trainee">
-            <Button
-              variant="contained"
-              component="span"
-              className={classes.button}
-            >
-              Back
-            </Button>
-          </Link>
-        </div>
-      </div>
+            <div className={classes.wrapper}>
+              <br />
+              <Link to="/trainee">
+                <Button
+                  variant="contained"
+                  component="span"
+                  className={classes.button}
+                >
+                  Back
+                </Button>
+              </Link>
+            </div>
+          </div>
+        ) : (
+          <NoMatch></NoMatch>
+        )}
+      </>
     );
   }
 }

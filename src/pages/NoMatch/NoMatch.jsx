@@ -7,20 +7,20 @@ const style = {
 const sampleTopone = {
   marginTop: "10vh",
   fontSize: "10vh",
-  color:"grey"
+  color: "grey"
 };
 const sampleTop = {
   marginTop: "10vh",
-  color:"grey"
+  color: "grey"
 };
 export class NoMatch extends Component {
-  constructor(props){
+  constructor(props) {
     super(props);
     console.log(props);
   }
   render() {
     return (
-      <div >
+      <div>
         <NavBar />
         <div style={style}>
           <h1 style={sampleTopone}>Not Found</h1>

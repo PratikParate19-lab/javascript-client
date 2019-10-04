@@ -1,20 +1,25 @@
 /* eslint-disable no-unused-vars */
 import React, { Component } from "react";
-import { Grid, TextField, Avatar } from "@material-ui/core";
-// import { Container, CssBaseline } from "@material-ui/core";
+import Avatar from "@material-ui/core/Avatar";
+import Button from "@material-ui/core/Button";
+import { callApi } from "../../lib/utils/api";
+import CssBaseline from "@material-ui/core/CssBaseline";
+import CircularProgress from "@material-ui/core/CircularProgress";
+import InputAdornment from "@material-ui/core/InputAdornment";
+import IconButton from "@material-ui/core/IconButton";
+import TextField from "@material-ui/core/TextField";
 import LockOutlinedIcon from "@material-ui/icons/LockOutlined";
 import Typography from "@material-ui/core/Typography";
-import validationLoginSchema from "./validationLoginSchema";
+import { withStyles } from "@material-ui/core/styles";
 import Container from "@material-ui/core/Container";
-import IconButton from "@material-ui/core/IconButton";
 import Mail from "@material-ui/icons/Mail";
 import Visibility from "@material-ui/icons/Visibility";
 import VisibilityOff from "@material-ui/icons/VisibilityOff";
-import InputAdornment from "@material-ui/core/InputAdornment";
-// import AccountCircle from "@material-ui/icons/AccountCircle";
-// import { style } from "./style";
-import Button from "@material-ui/core/Button";
-import { withStyles } from "@material-ui/core/styles";
+import validationSchema from './validationLoginSchema';
+import { Redirect } from "react-router-dom";
+import { withSnackBarConsumer } from "../../contexts/SnackBarProvider/withSnackBarConsume";
+import LocalStorageMethods from "../../contexts/SnackBarProvider/LocalStorageMethods";
+
 const style = theme => ({
   "@global": {
     body: {
@@ -25,11 +30,7 @@ const style = theme => ({
     marginTop: theme.spacing(8),
     display: "flex",
     flexDirection: "column",
-    alignItems: "center",
-    background: "#fff",
-    borderRadius: "2px",
-    padding: "8px",
-    boxShadow: "1px 2px 2px 2px #d1d1d1"
+    alignItems: "center"
   },
   avatar: {
     margin: theme.spacing(1),
@@ -44,23 +45,27 @@ const style = theme => ({
     margin: theme.spacing(3, 0, 2)
   }
 });
+
 class Login extends Component {
   constructor(props) {
     super(props);
     this.state = {
       email: "",
       password: "",
+      showPassword: false,
       errors: {},
       isTouch: [],
       button: true,
-      showPassword: false
+      redirect: false,
+      loading: false
     };
-    this.handleFieldChange = this.handleFieldChange.bind(this);
   }
 
   handleFieldChange = event => {
     this.setState(
-      { [event.target.name]: event.target.value },
+      {
+        [event.target.name]: event.target.value
+      },
       this.handleValidator
     );
   };
@@ -73,7 +78,7 @@ class Login extends Component {
   handleValidator = () => {
     let ErrorObj = {};
     const { email, password } = this.state;
-    const valid = validationLoginSchema
+    const valid = validationSchema
       .validate({ email, password }, { abortEarly: false })
       .then(success => {
         this.setState({
@@ -92,7 +97,6 @@ class Login extends Component {
           button: true
         });
       });
-    return valid;
   };
 
   hasErrors = value => {
@@ -133,91 +137,119 @@ class Login extends Component {
     );
   };
 
-  render() {
-    const { button, showPassword } = this.state;
-    const { classes } = this.props;
-    return (
-      <div>
-        <Container>
-          <Grid
-            container
-            spacing={3}
-            direction="column"
-            alignItems="center"
-            justify="center"
-            style={{ minHeight: "75vh" }}
-          >
-            <Grid item xs={6} className={classes.paper}>
-              <Avatar className={classes.avatar}>
-                <LockOutlinedIcon />
-              </Avatar>
-              <Typography component="h1" variant="h5">
-                Login
-              </Typography>
-              <form className={classes.form} noValidate>
-                <TextField
-                  required
-                  name="email"
-                  id="outlined-required"
-                  label="Email Address"
-                  defaultValue=""
-                  margin="normal"
-                  variant="outlined"
-                  fullWidth
-                  onChange={this.handleFieldChange}
-                  error={this.getErrorBool("email")}
-                  onBlur={this.blurHandler("email")}
-                  helperText={this.getError("email")}
-                  InputProps={{
-                    startAdornment: (
-                      <InputAdornment position="start">
-                        <Mail />
-                      </InputAdornment>
-                    )
-                  }}
-                />
-                <TextField
-                  fullWidth
-                  name="password"
-                  id="outlined-adornment-password"
-                  variant="outlined"
-                  type={showPassword ? "text" : "password"}
-                  label="Password"
-                  onChange={this.handleFieldChange}
-                  error={this.getErrorBool("password")}
-                  onBlur={this.blurHandler("password")}
-                  helperText={this.getError("password")}
-                  InputProps={{
-                    startAdornment: (
-                      <InputAdornment position="start">
-                        <IconButton
-                          edge="start"
-                          aria-label="Toggle password visibility"
-                          onClick={this.handleClickShowPassword}
-                        >
-                          {showPassword ? <Visibility /> : <VisibilityOff />}
-                        </IconButton>
-                      </InputAdornment>
-                    )
-                  }}
-                />
+  handleSubmit = async event => {
+    const { email, password } = this.state;
+    const { snackBarOpen, setItem } = this.props;
+    this.setState({
+      loading: true
+    });
+    try {
+      const res = await callApi({
+        url:'https://express-training.herokuapp.com/api/user/login',
+        method: "post",
+        data: {
+          email,
+          password
+        }
+      });
+      setItem("token", res.data.data);
+      console.log("success", res.data.data);
+      this.setState({
+        redirect: true,
+        loading: false
+      });
+    } catch (error) {
+      const err = error.message;
+      snackBarOpen(err, "error");
+      this.setState({
+        loading: false
+      });
+    }
+  };
 
-                <Button
-                  type="submit"
-                  fullWidth
-                  variant="contained"
-                  color="primary"
-                  className={classes.submit}
-                  disabled={button}
-                >
-                  Sign In
-                </Button>
-              </form>
-            </Grid>
-          </Grid>
-        </Container>
-      </div>
+  render() {
+    const { classes } = this.props;
+    const { showPassword, button, redirect, loading } = this.state;
+    if (redirect) {
+      return <Redirect to="trainee" />;
+    }
+
+    return (
+      <Container component="main" maxWidth="xs">
+        <CssBaseline />
+        <div className={classes.paper}>
+          <Avatar className={classes.avatar}>
+            <LockOutlinedIcon />
+          </Avatar>
+          <Typography component="h1" variant="h5">
+            Sign in
+          </Typography>
+          <form className={classes.form} noValidate>
+            <TextField
+              required
+              name="email"
+              id="outlined-required"
+              label="Email Address"
+              defaultValue=""
+              margin="normal"
+              variant="outlined"
+              fullWidth
+              onChange={this.handleFieldChange}
+              error={this.getErrorBool("email")}
+              onBlur={this.blurHandler("email")}
+              helperText={this.getError("email")}
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <Mail />
+                  </InputAdornment>
+                )
+              }}
+            />
+            <TextField
+              fullWidth
+              name="password"
+              id="outlined-adornment-password"
+              variant="outlined"
+              type={showPassword ? "text" : "password"}
+              label="Password"
+              onChange={this.handleFieldChange}
+              error={this.getErrorBool("password")}
+              onBlur={this.blurHandler("password")}
+              helperText={this.getError("password")}
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <IconButton
+                      edge="start"
+                      aria-label="Toggle password visibility"
+                      onClick={this.handleClickShowPassword}
+                    >
+                      {showPassword ? <VisibilityOff /> : <Visibility />}
+                    </IconButton>
+                  </InputAdornment>
+                )
+              }}
+            />
+
+            <Button
+              fullWidth
+              variant="contained"
+              color="primary"
+              className={classes.submit}
+              disabled={button}
+              onClick={this.handleSubmit}
+            >
+              {loading && <CircularProgress color="secondary" />}
+              Sign In
+            </Button>
+          </form>
+        </div>
+      </Container>
     );
   }
 }
-export default withStyles(style)(Login);
+
+export default LocalStorageMethods(
+  withSnackBarConsumer(withStyles(style)(Login))
+);
