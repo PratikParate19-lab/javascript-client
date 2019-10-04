@@ -250,6 +250,5 @@ class Login extends Component {
   }
 }
 
-export default LocalStorageMethods(
-  withSnackBarConsumer(withStyles(style)(Login))
+export default LocalStorageMethods(withSnackBarConsumer(withStyles(style)(Login))
 );

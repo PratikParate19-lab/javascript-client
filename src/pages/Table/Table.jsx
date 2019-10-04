@@ -1,3 +1,4 @@
+/* eslint-disable no-undef */
 /* eslint-disable no-unused-vars */
 import React, { Component } from "react";
 import { withStyles } from "@material-ui/core/styles";
@@ -10,7 +11,7 @@ import TableSortLabel from "@material-ui/core/TableSortLabel";
 import TablePagination from "@material-ui/core/TablePagination";
 import Paper from "@material-ui/core/Paper";
 import IconButton from "@material-ui/core/IconButton";
-
+import withLoaderAndMessage from '../../components/HOC/withLoaderAndMessage'
 const style = theme => ({
   root: {
     width: "100%",
@@ -85,7 +86,7 @@ class TablePage extends Component {
             colSpan={3}
             count={count}
             page={page}
-            rowsPerPage={10}
+            rowsPerPage={20}
             SelectProps={{
               inputProps: { "aria-label": "Rows per page" },
               native: true
@@ -100,4 +101,4 @@ class TablePage extends Component {
   }
 }
 
-export default withStyles(style)(TablePage);
+export default withLoaderAndMessage(withStyles(style)(TablePage));

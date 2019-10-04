@@ -7,6 +7,7 @@ export const callApi =  async ({url, method, data={}, params={}}) => {
     method,
     data,
     params,
+
   });
   return response;
 }

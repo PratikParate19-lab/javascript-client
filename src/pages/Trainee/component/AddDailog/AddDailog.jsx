@@ -1,32 +1,33 @@
 /* eslint-disable no-unused-vars */
-import React, { Component } from "react";
+import React from "react";
+
 import Dialog from "@material-ui/core/Dialog";
+
 import DialogContent from "@material-ui/core/DialogContent";
 import DialogContentText from "@material-ui/core/DialogContentText";
 import DialogTitle from "@material-ui/core/DialogTitle";
-export class AddDailog extends Component {
+
+class AddDialog extends React.Component {
   render() {
-    const { open, handleClose, children } = this.props;
-    console.log("this.props",this.props); 
+    const { openProp, clickHandler, children } = this.props;
+    console.log(this.state);
     return (
       <div>
         <Dialog
-          open={this.props.open}
-          onClose={handleClose}
+          open={openProp}
+          onClose={clickHandler}
           aria-labelledby="form-dialog-title"
-          aria-describedby="form-dialog-description"
         >
-          <DialogTitle id="form-dialog-title">{"Add Trainee"}</DialogTitle>
+          <DialogTitle id="form-dialog-title">Add Trainee</DialogTitle>
           <DialogContent>
-            <DialogContentText id="form-dialog-description">
-              {children}
-            </DialogContentText>
-            <DialogContent></DialogContent>
+            <DialogContentText>Enter your trainee details</DialogContentText>
           </DialogContent>
+
+          {children}
         </Dialog>
       </div>
     );
   }
 }
 
-export default AddDailog;
+export default AddDialog;

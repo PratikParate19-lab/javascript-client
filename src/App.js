@@ -13,8 +13,17 @@ import InputDemo from "./pages/InputFieldDemo/InputDemo";
 import TextFieldDemo from "./pages/TextFieldDemo/TextFieldDemo";
 import PrivateRoute from "./routes/PrivateRoute";
 import AuthRoute from "./routes/AuthRoute";
-import SimpleSnackbar from "./contexts/SnackBarProvider/SnackBarProvider"
+import SimpleSnackbar from "./contexts/SnackBarProvider/SnackBarProvider";
+import axios from "axios";
+const token = localStorage.getItem("token");
 
+axios.interceptors.request.use(
+  config => {
+    config.headers = { Authorization: token };
+    return config;
+  },
+  error => Promise.reject(error)
+);
 const App = () => (
   <SimpleSnackbar>
     <MuiThemeProvider theme={theme}>

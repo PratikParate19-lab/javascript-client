@@ -1,17 +1,23 @@
 /* eslint-disable no-unused-vars */
-import AddDialog from "./component/AddDailog/AddDailog";
+import AddDialog from "../Trainee/component/AddDailog/AddDailog";
 import Button from "@material-ui/core/Button";
 import DeleteIcon from "@material-ui/icons/Delete";
-import RemoveDialog from "./component/RemoveDailog/RemoveDailog";
+import RemoveDialog from "../Trainee/component/RemoveDailog/RemoveDailog";
 import EditIcon from "@material-ui/icons/Edit";
-import EditDialog from "./component/EditDailog/EditDailog";
+import EditDialog from "../Trainee/component/EditDailog/EditDailog";
 import Form from "../Trainee/Form";
 import moment from "moment";
-import trainees from "./data/trainees";
+import LocalStorageMethods from "../../contexts/SnackBarProvider/LocalStorageMethods";
+// import trainees from "./data/trainees";
 import Table from "../Table/Table";
 import React, { Component } from "react";
-import { Link } from "react-router-dom";
+// import { Link } from "react-router-dom";
 import { withSnackBarConsumer } from "../../contexts/SnackBarProvider/withSnackBarConsume";
+import { callApi } from "../../lib/utils/api";
+import { async } from "q";
+// import * as dotenv from 'dotenv';
+
+// dotenv.config();
 
 class TraineeList extends Component {
   constructor(props) {
@@ -28,15 +34,49 @@ class TraineeList extends Component {
       },
       openEditDialog: false,
       openDeleteDialog: false,
-      currentUser: {}
+      currentUser: {},
+      loader: true,
+      data: [],
+      loading: true,
+      skip: 0,
+      limit: 10
     };
   }
 
+  componentDidMount = async () => {
+    console.log("dsfdsfdsf", this.props);
+    const { snackBarOpen, getItem } = this.props;
+    const { loader, data, loading, skip, limit } = this.state;
+    // debugger;
+    try{
+    const res = await callApi({
+      url: "https://express-training.herokuapp.com/api/trainee",
+      params: { skip, limit },
+      method: "get"
+    });
+    // debugger;
+    console.log("success", res);
+    this.setState({
+      loading:false,
+      data:  res.data.data.records
+    })
+    }catch(error){
+      const err= error.response.data.message;
+      snackBarOpen(err, "Error");
+      console.log(error);
+      this.setState({
+        loading:false
+      })
+    }
+  };
+
   handleClick = () => {
+    console.log("state",this.state);
     const { open } = this.state;
     this.setState({
       open: open ? false : true
     });
+    console.log("state",this.state);
   };
 
   handleClose = () => {
@@ -47,7 +87,7 @@ class TraineeList extends Component {
     });
   };
 
-  handleEditDialogueOpen = obj => {
+  handleEditDialogueOpen = async obj => {
     this.setState({
       openEditDialog: true,
       currentUser: obj
@@ -71,18 +111,32 @@ class TraineeList extends Component {
       : snackBarOpen("This is an error message !", "error");
   };
 
-  handleDataParent = (name, email, password) => event => {
+  handleDataParent = (name, email, password) => async event => {
     const { user, open } = this.state;
     const { snackBarOpen } = this.props;
-
     user["name"] = name;
     user["email"] = email;
     user["password"] = password;
     this.setState({
       open: open ? false : true
     });
-    snackBarOpen("This is a success message !", "success");
-    console.log(this.state.user);
+// console.log
+    try {
+      const res = await callApi({
+        url: "https://express-training.herokuapp.com/api/trainee",
+        method: "post",
+        data: {
+          name,
+          email,
+          password
+        }
+      });
+      snackBarOpen(res.data.message, "success");
+      console.log("success", res);
+    } catch (error) {
+      const err = error.response.data.message;
+      snackBarOpen(err, "Error");
+    }
   };
 
   getDateFormatted = date => {
@@ -98,10 +152,38 @@ class TraineeList extends Component {
       orderBy: property
     });
   };
-  handleChangePage = (event, newPage) => {
+  handleChangePage = async (event, newPage) => {
+    const { snackBarOpen } = this.props;
+    const { skip, limit } = this.state;
+
     this.setState({
-      page: newPage
+      page: newPage,
+      skip: limit * newPage,
+      // limit: limit * newPage,
+      loading: true
     });
+
+    try {
+      const res = await callApi({
+        url: "https://express-training.herokuapp.com/api/trainee",
+        params: { skip, limit },
+        method: "get"
+      });
+      console.log("success", res.data.data.records);
+      this.setState({
+        loading: false,
+        data: res.data.data.records
+      });
+    } catch (error) {
+      const err = error.response.data.message;
+      snackBarOpen(err, "Error");
+      console.log(error);
+      this.setState({
+        loading: false
+      });
+    }
+
+    console.log("state values skip", skip, "limit", limit);
   };
 
   clickHandler = () => {
@@ -119,7 +201,9 @@ class TraineeList extends Component {
       page,
       openEditDialog,
       openDeleteDialog,
-      currentUser
+      currentUser,
+      loading,
+      data
     } = this.state;
     const { match } = this.props;
 
@@ -148,9 +232,12 @@ class TraineeList extends Component {
           data={currentUser}
           onSubmit={this.onDeleteSubmit}
         />
+        
         <Table
+          loading={loading}
           id="id"
-          data={trainees}
+          data={data}
+          datalength={data.length}
           column={[
             { field: "name", label: "Name", align: "center" },
             {
@@ -179,21 +266,21 @@ class TraineeList extends Component {
           order={order}
           onSort={this.handleSort}
           onSelect={this.handleSelect}
-          count={100}
+          count={600}
           page={page}
           onChangePage={this.handleChangePage}
         />
 
-        <ul>
+        {/* <ul>
           {trainees.map(({ id, name }) => (
             <li key={id}>
               <Link to={`${match.url}/${id}`}> {name} </Link>
             </li>
           ))}
-        </ul>
+        </ul> */}
       </>
     );
   }
 }
 
-export default withSnackBarConsumer(TraineeList);
+export default LocalStorageMethods(withSnackBarConsumer(TraineeList));
