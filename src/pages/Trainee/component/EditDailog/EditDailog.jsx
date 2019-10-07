@@ -11,7 +11,9 @@ import Button from "@material-ui/core/Button";
 import { Grid, TextField } from "@material-ui/core";
 import { withStyles } from "@material-ui/core/styles";
 import { withSnackBarConsumer } from "../../../../contexts/SnackBarProvider/withSnackBarConsume";
-
+import { async } from "q";
+import { callApi } from "../../../../lib/utils/api";
+const apiUrl = "https://express-training.herokuapp.com/api/trainee";
 const styles = theme => ({
   root: {
     flexGrow: 1
@@ -30,23 +32,42 @@ class EditDialog extends React.PureComponent {
     const { name, email } = data;
     this.state = { name, email };
   }
-
+componentDidMount(){
+  console.log("propsEdit page",this.props);
+}
   handleInputChange = event => {
     this.setState({
       [event.target.name]: event.target.value
     });
   };
 
-  handleSubmit = () => {
+  handleSubmit = async () => {
     const { onClose } = this.state;
     const { snackBarOpen } = this.props;
     console.log(this.state);
-    snackBarOpen("This is a success message !", "success");
+    console.log(this.props);
+    // debugger;
+    try {
+      const res = await callApi({
+        url: apiUrl,
+        data: this.state,
+        method: "put"
+      });
+      
+      console.log("success", res);
+     
+      snackBarOpen("This is a success message !", "success");
+    } catch (error) {
+      console.log(error);
+      // const err = error.response.data.message;
+      // snackBarOpen(err, "Error");
+      
+    }
   };
 
   render() {
     const { open, onClose, classes } = this.props;
-    console.log("this",this.props);
+    console.log("this", this.props);
     console.log(this.props.data.name);
     const { name, email } = this.state;
     return (

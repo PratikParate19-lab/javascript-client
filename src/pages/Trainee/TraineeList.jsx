@@ -18,7 +18,7 @@ import { async } from "q";
 // import * as dotenv from 'dotenv';
 
 // dotenv.config();
-
+const apiUrl="https://express-training.herokuapp.com/api/trainee";
 class TraineeList extends Component {
   constructor(props) {
     super(props);
@@ -50,7 +50,33 @@ class TraineeList extends Component {
     // debugger;
     try{
     const res = await callApi({
-      url: "https://express-training.herokuapp.com/api/trainee",
+      url: apiUrl,
+      params: { skip, limit },
+      method: "get"
+    });
+    // debugger;
+    console.log("success", res);
+    this.setState({
+      loading:false,
+      data:  res.data.data.records
+    })
+    }catch(error){
+      const err= error.response.data.message;
+      snackBarOpen(err, "Error");
+      console.log(error);
+      this.setState({
+        loading:false
+      })
+    }
+  };
+  reload = async () => {
+    console.log("dsfdsfdsf", this.props);
+    const { snackBarOpen, getItem } = this.props;
+    const { loader, data, loading, skip, limit } = this.state;
+    // debugger;
+    try{
+    const res = await callApi({
+      url: apiUrl,
       params: { skip, limit },
       method: "get"
     });
@@ -80,11 +106,13 @@ class TraineeList extends Component {
   };
 
   handleClose = () => {
+    const { snackBarOpen } = this.props;
     this.setState({
       open: false,
       openEditDialog: false,
       openDeleteDialog: false
     });
+    snackBarOpen("This is an error message !", "error");
   };
 
   handleEditDialogueOpen = async obj => {
@@ -101,9 +129,32 @@ class TraineeList extends Component {
     });
   };
 
-  onDeleteSubmit = obj => {
+  onDeleteSubmit = async obj => {
     console.log("Delete Operation-->", obj);
+
     const { snackBarOpen } = this.props;
+    
+    try {
+      const res = await callApi({
+        url: apiUrl+'/'+`${obj._id}`,
+        method: "delete"
+      });
+      console.log("success", apiUrl+'/'+`${obj._id}`);
+      console.log("success", res);
+      // this.setState({
+      //   loading: false,
+      //   data: res.data.data.records
+      // });
+      this.reload();
+    } catch (error) {
+      const err = error.response.data.message;
+      snackBarOpen(err, "Error");
+      console.log(error);
+      this.setState({
+        loading: false
+      });
+    }
+
     const check = moment(obj.createdAt).isAfter("2019-02-14");
 
     check
@@ -123,7 +174,7 @@ class TraineeList extends Component {
 // console.log
     try {
       const res = await callApi({
-        url: "https://express-training.herokuapp.com/api/trainee",
+        url: apiUrl,
         method: "post",
         data: {
           name,
@@ -155,7 +206,7 @@ class TraineeList extends Component {
   handleChangePage = async (event, newPage) => {
     const { snackBarOpen } = this.props;
     const { skip, limit } = this.state;
-
+console.log(newPage);
     this.setState({
       page: newPage,
       skip: limit * newPage,
@@ -165,7 +216,7 @@ class TraineeList extends Component {
 
     try {
       const res = await callApi({
-        url: "https://express-training.herokuapp.com/api/trainee",
+        url: apiUrl,
         params: { skip, limit },
         method: "get"
       });
